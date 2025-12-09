@@ -1,0 +1,21 @@
+name: pink-voice
+type: daemon
+claude_module: VOICE.md
+
+env_vars:
+  - name: TRANSCRIPTION_PREFIX
+    required: false
+
+install:
+  unix: |
+    go build -o pink-voice .
+    sudo ln -sf $(pwd)/pink-voice /usr/local/bin/pink-voice
+  windows: |
+    go build -o pink-voice.exe .
+    copy pink-voice.exe %USERPROFILE%\bin\
+
+run: |
+  pink-voice
+
+health: |
+  pink-voice --health

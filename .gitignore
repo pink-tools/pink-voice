@@ -1,0 +1,16 @@
+# Environment
+.env
+
+# Binary
+pink-voice
+pink-voice.exe
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
