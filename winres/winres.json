@@ -1,0 +1,40 @@
+{
+  "RT_GROUP_ICON": {
+    "APP": {
+      "0000": "icon.ico"
+    }
+  },
+  "RT_MANIFEST": {
+    "#1": {
+      "0409": {
+        "identity": {
+          "name": "pink-voice",
+          "version": "1.0.0.0"
+        },
+        "description": "Voice transcription daemon",
+        "minimum-os": "win7",
+        "execution-level": "as invoker",
+        "dpi-awareness": "system"
+      }
+    }
+  },
+  "RT_VERSION": {
+    "#1": {
+      "0000": {
+        "fixed": {
+          "file_version": "1.0.0.0",
+          "product_version": "1.0.0.0"
+        },
+        "info": {
+          "0409": {
+            "FileDescription": "Voice transcription daemon",
+            "FileVersion": "1.0.0",
+            "ProductName": "pink-voice",
+            "ProductVersion": "1.0.0",
+            "OriginalFilename": "pink-voice.exe"
+          }
+        }
+      }
+    }
+  }
+}

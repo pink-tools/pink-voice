@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            name: build-macos
+            output: pink-voice-darwin-arm64
+          - os: ubuntu-latest
+            name: build-linux
+            output: pink-voice-linux-amd64
+          - os: windows-latest
+            name: build-windows
+            output: pink-voice-windows-amd64.exe
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libx11-xcb-dev libxtst-dev libxkbcommon-dev libxkbcommon-x11-dev libayatana-appindicator3-dev
+
+      - name: Build
+        run: go build -o ${{ matrix.output }} .
+
+      - name: Test run
+        shell: bash
+        run: |
+          timeout 5 ./${{ matrix.output }} 2>&1 || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.output }}
+          path: ${{ matrix.output }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Delete old release
+        run: gh release delete latest --yes || true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: pink-voice
+          body_path: RELEASE_NOTES.md
+          files: dist/*
