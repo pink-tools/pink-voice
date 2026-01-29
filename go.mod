@@ -7,7 +7,7 @@ require (
 	github.com/gen2brain/malgo v0.11.22
 	github.com/getlantern/systray v1.2.2
 	github.com/joho/godotenv v1.5.1
-	github.com/pink-tools/pink-otel v1.5.0
+	github.com/pink-tools/pink-otel v1.5.1
 	github.com/robotn/gohook v0.42.3
 )
 
