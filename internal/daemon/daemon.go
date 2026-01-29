@@ -75,14 +75,12 @@ func (d *Daemon) startRecording() {
 		otel.Error(context.Background(), "recording failed", map[string]any{"error": err.Error()})
 		return
 	}
-	otel.Info(context.Background(), "recording started")
 	d.setState(StateRecording)
 	platform.PlaySound(platform.SoundStart)
 }
 
 func (d *Daemon) stopRecording() {
 	platform.PlaySound(platform.SoundStop)
-	otel.Info(context.Background(), "transcribing")
 	d.setState(StateTranscribing)
 
 	audioPath, err := d.recorder.Stop()
