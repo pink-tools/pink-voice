@@ -1,16 +1,20 @@
+# pink-voice
+
+Global hotkey voice input daemon. Press Ctrl+Q to record, release to transcribe.
+
+## Binaries
+
 - `pink-voice-darwin-arm64` - macOS ARM64
 - `pink-voice-linux-amd64` - Linux x64
 - `pink-voice-windows-amd64.exe` - Windows x64
 
-Requires [pink-transcriber](https://github.com/pink-tools/pink-transcriber) running.
+## Features
 
-**Structure:**
+- Global hotkey (Ctrl+Q) for push-to-talk
+- Automatic transcription via pink-transcriber
+- Result copied to clipboard
+- Daemon mode with status/stop commands
 
-```
-~/pink-tools/
-├── pink-voice
-├── pink-transcriber
-└── pink-whisper/
-    ├── pink-whisper
-    └── ggml-large-v3.bin
-```
+## Requirements
+
+- [pink-transcriber](https://github.com/pink-tools/pink-transcriber) running
