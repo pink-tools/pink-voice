@@ -33,8 +33,8 @@ github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c h1:rp5dCmg/yLR3mgF
 github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c/go.mod h1:X07ZCGwUbLaax7L0S3Tw4hpejzu63ZrrQiUe6W0hcy0=
 github.com/pink-tools/pink-core v1.1.1 h1:w3a5WMbqjEMDf/cfH81Wj0mS34tigSsg2o1pgcYHexs=
 github.com/pink-tools/pink-core v1.1.1/go.mod h1:Yysa7BoyKeGd39ZlQ0V+Rl9oDPqSsdpWJCuAbqjQum4=
-github.com/pink-tools/pink-otel v1.3.0 h1:hEmXa0NQjZGs9vMR5aIvpGq4vHryfYOmPuIFgYwU6U0=
-github.com/pink-tools/pink-otel v1.3.0/go.mod h1:+bdZ9DS90ONsjis1aCMobE2KcIQbJ1szFN1ZBdAVsJs=
+github.com/pink-tools/pink-otel v1.4.0 h1:FLVstSMFTaKppa/HPfph7MmOHakDL/XeBtmV8Sq1k3M=
+github.com/pink-tools/pink-otel v1.4.0/go.mod h1:+bdZ9DS90ONsjis1aCMobE2KcIQbJ1szFN1ZBdAVsJs=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/robotn/gohook v0.42.3 h1:6Pm6q4gOn+CNjDpiBTWqPwbCJF4+0WD/Fdizlztua2U=

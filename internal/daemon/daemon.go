@@ -119,16 +119,19 @@ func (d *Daemon) processRecording(audioPath string) {
 		text = "[No speech detected]"
 	}
 
+	logAttrs := map[string]any{"text": text, "chars": len(text), "seconds": duration}
+
 	if d.cfg.TranscriptionPrefix != "" {
 		prefix := d.cfg.TranscriptionPrefix
 		if !strings.HasSuffix(prefix, " ") {
 			prefix += " "
 		}
+		logAttrs["prefix"] = strings.TrimSpace(d.cfg.TranscriptionPrefix)
 		text = prefix + text
 	}
 
 	platform.CopyToClipboard(text)
-	otel.Info(context.Background(), "transcribed", map[string]any{"text": text, "chars": len(text), "seconds": duration})
+	otel.Info(context.Background(), "transcribed", logAttrs)
 	platform.PlaySound(platform.SoundDone)
 	d.setState(StateIdle)
 }
