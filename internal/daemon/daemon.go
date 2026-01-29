@@ -3,6 +3,7 @@ package daemon
 import (
 	"context"
 	"os"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -120,7 +121,7 @@ func (d *Daemon) processRecording(audioPath string) {
 
 	if d.cfg.TranscriptionPrefix != "" {
 		prefix := d.cfg.TranscriptionPrefix
-		if prefix[len(prefix)-1] != ' ' {
+		if !strings.HasSuffix(prefix, " ") {
 			prefix += " "
 		}
 		text = prefix + text

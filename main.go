@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"runtime"
 
 	"github.com/pink-tools/pink-core"
 	"github.com/pink-tools/pink-voice/internal/config"
@@ -14,6 +15,7 @@ var version = "dev"
 const serviceName = "pink-voice"
 
 func main() {
+	runtime.LockOSThread()
 	core.LoadEnv(serviceName)
 
 	core.Run(core.Config{
@@ -57,19 +59,12 @@ Usage:
 			return err
 		}
 
-		// Run daemon in goroutine (tray.Run blocks)
-		done := make(chan struct{})
 		go func() {
-			d.Run()
-			close(done)
+			<-ctx.Done()
+			d.Stop()
 		}()
 
-		// Wait for shutdown signal
-		<-ctx.Done()
-		d.Stop()
-
-		// Wait for daemon to finish
-		<-done
+		d.Run()
 		return nil
 	})
 }

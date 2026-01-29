@@ -25,10 +25,10 @@ func New(onToggle, onQuit func()) *Tray {
 }
 
 func (t *Tray) Run() {
-	systray.Run(t.onReady, func() {})
+	systray.Run(t.ready, func() {})
 }
 
-func (t *Tray) onReady() {
+func (t *Tray) ready() {
 	systray.SetTemplateIcon(iconData, iconData)
 	systray.SetTooltip("Pink Voice")
 
@@ -45,13 +45,9 @@ func (t *Tray) handleClicks() {
 	for {
 		select {
 		case <-t.toggleItem.ClickedCh:
-			if t.onToggle != nil {
-				t.onToggle()
-			}
+			t.onToggle()
 		case <-t.quitItem.ClickedCh:
-			if t.onQuit != nil {
-				t.onQuit()
-			}
+			t.onQuit()
 			systray.Quit()
 			return
 		}
