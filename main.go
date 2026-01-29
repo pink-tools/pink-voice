@@ -50,11 +50,6 @@ Usage:
 			},
 		},
 	}, func(ctx context.Context) error {
-		// Stop any existing instance via IPC
-		if core.IsRunning(serviceName) {
-			core.SendStop(serviceName)
-		}
-
 		cfg := config.Load()
 
 		d, err := daemon.New(cfg)
