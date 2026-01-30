@@ -2,6 +2,10 @@ module github.com/pink-tools/pink-voice
 
 go 1.25.4
 
+replace github.com/pink-tools/pink-otel => ../pink-otel
+
+replace github.com/pink-tools/pink-core => ../pink-core
+
 require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/gen2brain/malgo v0.11.22

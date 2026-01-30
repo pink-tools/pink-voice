@@ -37,7 +37,7 @@ type Daemon struct {
 func New(cfg *config.Config) (*Daemon, error) {
 	rec, err := recorder.New(cfg.SampleRate)
 	if err != nil {
-		otel.Error(context.Background(), "recorder init failed", map[string]any{"error": err.Error()})
+		otel.Error(context.Background(), "recorder init failed", otel.Attr{"error", err.Error()})
 		return nil, err
 	}
 
@@ -49,8 +49,7 @@ func New(cfg *config.Config) (*Daemon, error) {
 }
 
 func (d *Daemon) Run() {
-	otel.Info(context.Background(), "started")
-	otel.Info(context.Background(), "hotkey registered", map[string]any{"hotkey": "Ctrl+Q"})
+	otel.Info(context.Background(), "hotkey registered", otel.Attr{"hotkey", "Ctrl+Q"})
 
 	hook.Register(hook.KeyDown, []string{"q", "ctrl"}, func(e hook.Event) {
 		d.toggleRecording()
@@ -73,7 +72,7 @@ func (d *Daemon) toggleRecording() {
 
 func (d *Daemon) startRecording() {
 	if err := d.recorder.Start(); err != nil {
-		otel.Error(context.Background(), "recording failed", map[string]any{"error": err.Error()})
+		otel.Error(context.Background(), "recording failed", otel.Attr{"error", err.Error()})
 		return
 	}
 	d.setState(StateRecording)
@@ -86,7 +85,7 @@ func (d *Daemon) stopRecording() {
 
 	audioPath, err := d.recorder.Stop()
 	if err != nil {
-		otel.Error(context.Background(), "recording stop failed", map[string]any{"error": err.Error()})
+		otel.Error(context.Background(), "recording stop failed", otel.Attr{"error", err.Error()})
 		d.setState(StateIdle)
 		return
 	}
@@ -110,7 +109,7 @@ func (d *Daemon) processRecording(audioPath string) {
 	duration := time.Since(start).Seconds()
 
 	if err != nil {
-		otel.Error(context.Background(), "transcription failed", map[string]any{"error": err.Error()})
+		otel.Error(context.Background(), "transcription failed", otel.Attr{"error", err.Error()})
 		d.setState(StateIdle)
 		return
 	}
@@ -119,19 +118,20 @@ func (d *Daemon) processRecording(audioPath string) {
 		text = "[No speech detected]"
 	}
 
-	logAttrs := map[string]any{"text": text, "chars": len(text), "seconds": duration}
-
+	var logAttrs []otel.Attr
+	clipboardText := text
 	if d.cfg.TranscriptionPrefix != "" {
 		prefix := d.cfg.TranscriptionPrefix
 		if !strings.HasSuffix(prefix, " ") {
 			prefix += " "
 		}
-		logAttrs["prefix"] = strings.TrimSpace(d.cfg.TranscriptionPrefix)
-		text = prefix + text
+		logAttrs = append(logAttrs, otel.Attr{"prefix", strings.TrimSpace(d.cfg.TranscriptionPrefix)})
+		clipboardText = prefix + text
 	}
+	logAttrs = append(logAttrs, otel.Attr{"text", text}, otel.Attr{"chars", len(text)}, otel.Attr{"seconds", duration})
 
-	platform.CopyToClipboard(text)
-	otel.Info(context.Background(), "transcribed", logAttrs)
+	platform.CopyToClipboard(clipboardText)
+	otel.Info(context.Background(), "transcribed", logAttrs...)
 	platform.PlaySound(platform.SoundDone)
 	d.setState(StateIdle)
 }
