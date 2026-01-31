@@ -22,7 +22,7 @@ jobs:
 
       - name: Test run
         run: |
-          sudo mkdir -p /Users/pink-tools/pink-voice
+          sudo mkdir -p /Users/pink-tools/pink-voice && sudo chmod 777 /Users/pink-tools/pink-voice
           brew install coreutils
           gtimeout 5 ./pink-voice-darwin-arm64 2>&1 | tee output.log || true
           grep -q "hotkey registered" output.log
@@ -53,7 +53,7 @@ jobs:
 
       - name: Test run
         run: |
-          sudo mkdir -p /home/pink-tools/pink-voice
+          sudo mkdir -p /home/pink-tools/pink-voice && sudo chmod 777 /home/pink-tools/pink-voice
           xvfb-run timeout 5 ./pink-voice-linux-amd64 2>&1 | tee output.log || true
           grep -q "hotkey registered" output.log
 
