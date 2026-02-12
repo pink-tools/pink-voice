@@ -10,7 +10,7 @@ import (
 
 	hook "github.com/robotn/gohook"
 
-	"github.com/pink-tools/pink-otel"
+	"github.com/pink-tools/pink-core/log"
 	"github.com/pink-tools/pink-voice/internal/config"
 	"github.com/pink-tools/pink-voice/internal/platform"
 	"github.com/pink-tools/pink-voice/internal/recorder"
@@ -37,7 +37,7 @@ type Daemon struct {
 func New(cfg *config.Config) (*Daemon, error) {
 	rec, err := recorder.New(cfg.SampleRate)
 	if err != nil {
-		otel.Error(context.Background(), "recorder init failed", otel.Attr{"error", err.Error()})
+		log.Error(context.Background(), "recorder init failed", log.Attr{"error", err.Error()})
 		return nil, err
 	}
 
@@ -49,7 +49,7 @@ func New(cfg *config.Config) (*Daemon, error) {
 }
 
 func (d *Daemon) Run() {
-	otel.Info(context.Background(), "hotkey registered", otel.Attr{"hotkey", "Ctrl+Q"})
+	log.Info(context.Background(), "hotkey registered", log.Attr{"hotkey", "Ctrl+Q"})
 
 	hook.Register(hook.KeyDown, []string{"q", "ctrl"}, func(e hook.Event) {
 		d.toggleRecording()
@@ -72,7 +72,7 @@ func (d *Daemon) toggleRecording() {
 
 func (d *Daemon) startRecording() {
 	if err := d.recorder.Start(); err != nil {
-		otel.Error(context.Background(), "recording failed", otel.Attr{"error", err.Error()})
+		log.Error(context.Background(), "recording failed", log.Attr{"error", err.Error()})
 		return
 	}
 	d.setState(StateRecording)
@@ -85,7 +85,7 @@ func (d *Daemon) stopRecording() {
 
 	audioPath, err := d.recorder.Stop()
 	if err != nil {
-		otel.Error(context.Background(), "recording stop failed", otel.Attr{"error", err.Error()})
+		log.Error(context.Background(), "recording stop failed", log.Attr{"error", err.Error()})
 		d.setState(StateIdle)
 		return
 	}
@@ -109,7 +109,7 @@ func (d *Daemon) processRecording(audioPath string) {
 	duration := time.Since(start).Seconds()
 
 	if err != nil {
-		otel.Error(context.Background(), "transcription failed", otel.Attr{"error", err.Error()})
+		log.Error(context.Background(), "transcription failed", log.Attr{"error", err.Error()})
 		d.setState(StateIdle)
 		return
 	}
@@ -118,20 +118,20 @@ func (d *Daemon) processRecording(audioPath string) {
 		text = "[No speech detected]"
 	}
 
-	var logAttrs []otel.Attr
+	var logAttrs []log.Attr
 	clipboardText := text
 	if d.cfg.TranscriptionPrefix != "" {
 		prefix := d.cfg.TranscriptionPrefix
 		if !strings.HasSuffix(prefix, " ") {
 			prefix += " "
 		}
-		logAttrs = append(logAttrs, otel.Attr{"prefix", strings.TrimSpace(d.cfg.TranscriptionPrefix)})
+		logAttrs = append(logAttrs, log.Attr{"prefix", strings.TrimSpace(d.cfg.TranscriptionPrefix)})
 		clipboardText = prefix + text
 	}
-	logAttrs = append(logAttrs, otel.Attr{"text", text}, otel.Attr{"chars", len(text)}, otel.Attr{"seconds", duration})
+	logAttrs = append(logAttrs, log.Attr{"text", text}, log.Attr{"chars", len(text)}, log.Attr{"seconds", duration})
 
 	platform.CopyToClipboard(clipboardText)
-	otel.Info(context.Background(), "transcribed", logAttrs...)
+	log.Info(context.Background(), "transcribed", logAttrs...)
 	platform.PlaySound(platform.SoundDone)
 	d.setState(StateIdle)
 }
@@ -142,7 +142,7 @@ func (d *Daemon) setState(state State) {
 }
 
 func (d *Daemon) Stop() {
-	otel.Info(context.Background(), "stopping")
+	log.Info(context.Background(), "stopping")
 	hook.End()
 	d.wg.Wait()
 	d.recorder.Close()

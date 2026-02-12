@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"runtime"
+	"syscall"
 
 	"github.com/pink-tools/pink-core"
 	"github.com/pink-tools/pink-voice/internal/config"
@@ -15,6 +17,11 @@ var version = "dev"
 const serviceName = "pink-voice"
 
 func main() {
+	if f, err := os.OpenFile(os.DevNull, os.O_WRONLY, 0); err == nil {
+		syscall.Dup2(int(f.Fd()), 2)
+		f.Close()
+	}
+
 	runtime.LockOSThread()
 	core.LoadEnv(serviceName)
 
