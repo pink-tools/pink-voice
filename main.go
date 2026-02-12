@@ -15,7 +15,6 @@ var version = "dev"
 const serviceName = "pink-voice"
 
 func main() {
-	silenceStderr()
 	runtime.LockOSThread()
 	core.LoadEnv(serviceName)
 
