@@ -37,7 +37,7 @@ type Daemon struct {
 func New(cfg *config.Config) (*Daemon, error) {
 	rec, err := recorder.New(cfg.SampleRate)
 	if err != nil {
-		log.Error(context.Background(), "recorder init failed", log.Attr{"error", err.Error()})
+		log.Error(context.Background(), "recorder init failed", log.Attr{K: "error", V: err.Error()})
 		return nil, err
 	}
 
@@ -49,7 +49,7 @@ func New(cfg *config.Config) (*Daemon, error) {
 }
 
 func (d *Daemon) Run() {
-	log.Info(context.Background(), "hotkey registered", log.Attr{"hotkey", "Ctrl+Q"})
+	log.Info(context.Background(), "hotkey registered", log.Attr{K: "hotkey", V: "Ctrl+Q"})
 
 	hook.Register(hook.KeyDown, []string{"q", "ctrl"}, func(e hook.Event) {
 		d.toggleRecording()
@@ -72,7 +72,7 @@ func (d *Daemon) toggleRecording() {
 
 func (d *Daemon) startRecording() {
 	if err := d.recorder.Start(); err != nil {
-		log.Error(context.Background(), "recording failed", log.Attr{"error", err.Error()})
+		log.Error(context.Background(), "recording failed", log.Attr{K: "error", V: err.Error()})
 		return
 	}
 	d.setState(StateRecording)
@@ -85,7 +85,7 @@ func (d *Daemon) stopRecording() {
 
 	audioPath, err := d.recorder.Stop()
 	if err != nil {
-		log.Error(context.Background(), "recording stop failed", log.Attr{"error", err.Error()})
+		log.Error(context.Background(), "recording stop failed", log.Attr{K: "error", V: err.Error()})
 		d.setState(StateIdle)
 		return
 	}
@@ -109,7 +109,7 @@ func (d *Daemon) processRecording(audioPath string) {
 	duration := time.Since(start).Seconds()
 
 	if err != nil {
-		log.Error(context.Background(), "transcription failed", log.Attr{"error", err.Error()})
+		log.Error(context.Background(), "transcription failed", log.Attr{K: "error", V: err.Error()})
 		d.setState(StateIdle)
 		return
 	}
@@ -125,10 +125,10 @@ func (d *Daemon) processRecording(audioPath string) {
 		if !strings.HasSuffix(prefix, " ") {
 			prefix += " "
 		}
-		logAttrs = append(logAttrs, log.Attr{"prefix", strings.TrimSpace(d.cfg.TranscriptionPrefix)})
+		logAttrs = append(logAttrs, log.Attr{K: "prefix", V: strings.TrimSpace(d.cfg.TranscriptionPrefix)})
 		clipboardText = prefix + text
 	}
-	logAttrs = append(logAttrs, log.Attr{"text", text}, log.Attr{"chars", len(text)}, log.Attr{"seconds", duration})
+	logAttrs = append(logAttrs, log.Attr{K: "text", V: text}, log.Attr{K: "chars", V: len(text)}, log.Attr{K: "seconds", V: duration})
 
 	platform.CopyToClipboard(clipboardText)
 	log.Info(context.Background(), "transcribed", logAttrs...)
