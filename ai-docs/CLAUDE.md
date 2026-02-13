@@ -155,7 +155,7 @@ type Config struct {
 }
 ```
 
-Loads `.env` from executable directory or cwd using `godotenv`.
+Environment loaded via `core.LoadEnv()` from `/Users/pink-tools/pink-voice/.env`.
 
 ### daemon/daemon.go
 
@@ -254,7 +254,7 @@ System tray using `getlantern/systray`:
 | github.com/atotto/clipboard | Cross-platform clipboard |
 | github.com/gen2brain/malgo | miniaudio bindings (audio) |
 | github.com/getlantern/systray | System tray |
-| github.com/joho/godotenv | .env parsing |
+| github.com/pink-tools/pink-core | CLI, IPC, .env loading |
 | github.com/pink-tools/pink-otel | JSON logging |
 | github.com/robotn/gohook | Global hotkey |
 
