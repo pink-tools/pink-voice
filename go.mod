@@ -6,7 +6,7 @@ require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/gen2brain/malgo v0.11.22
 	github.com/getlantern/systray v1.2.2
-	github.com/pink-tools/pink-core v1.8.3
+	github.com/pink-tools/pink-core v1.8.4
 	github.com/robotn/gohook v0.42.3
 )
 
