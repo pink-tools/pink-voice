@@ -8,4 +8,4 @@ Voice input daemon with global hotkey. Requires pink-transcriber running.
 /Users/pink-tools/pink-voice/pink-voice status # check status
 ```
 
-Ctrl+Q to start/stop recording. Result copied to clipboard.
+Option+Q to start/stop recording. Result copied to clipboard.

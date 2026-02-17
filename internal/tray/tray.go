@@ -1,6 +1,10 @@
 package tray
 
-import "github.com/getlantern/systray"
+import (
+	"runtime"
+
+	"github.com/getlantern/systray"
+)
 
 type StateType int
 
@@ -35,7 +39,11 @@ func (t *Tray) ready() {
 	t.statusItem = systray.AddMenuItem("Status: Idle", "")
 	t.statusItem.Disable()
 	systray.AddSeparator()
-	t.toggleItem = systray.AddMenuItem("Start Recording", "Ctrl+Q")
+	hotkey := "Option+Q"
+	if runtime.GOOS == "windows" {
+		hotkey = "Alt+Q"
+	}
+	t.toggleItem = systray.AddMenuItem("Start Recording", hotkey)
 	t.quitItem = systray.AddMenuItem("Quit", "")
 
 	go t.handleClicks()

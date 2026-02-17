@@ -3,6 +3,7 @@ package daemon
 import (
 	"context"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -49,9 +50,13 @@ func New(cfg *config.Config) (*Daemon, error) {
 }
 
 func (d *Daemon) Run() {
-	log.Info(context.Background(), "hotkey registered", log.Attr{K: "hotkey", V: "Ctrl+Q"})
+	hotkey := "Option+Q"
+	if runtime.GOOS == "windows" {
+		hotkey = "Alt+Q"
+	}
+	log.Info(context.Background(), "hotkey registered", log.Attr{K: "hotkey", V: hotkey})
 
-	hook.Register(hook.KeyDown, []string{"q", "ctrl"}, func(e hook.Event) {
+	hook.Register(hook.KeyDown, []string{"q", "alt"}, func(e hook.Event) {
 		d.toggleRecording()
 	})
 

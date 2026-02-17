@@ -24,7 +24,7 @@ func main() {
 		Usage: `pink-voice - voice transcription daemon
 
 Usage:
-  pink-voice        Start daemon (Ctrl+Q hotkey)
+  pink-voice        Start daemon (Option/Alt+Q hotkey)
   pink-voice stop   Stop daemon
   pink-voice status Check if daemon is running
   pink-voice help   Show this help`,
