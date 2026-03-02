@@ -1,0 +1,30 @@
+name: Test Intel Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-macos-intel:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          cache: false
+
+      - name: Build
+        run: go build -ldflags="-X main.version=test" -o pink-voice-darwin-amd64 .
+
+      - name: Test run
+        run: |
+          sudo mkdir -p /Users/pink-tools/pink-voice && sudo chmod 777 /Users/pink-tools/pink-voice
+          brew install coreutils
+          gtimeout 5 ./pink-voice-darwin-amd64 2>&1 | tee output.log || true
+          grep -q "hotkey registered" output.log
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pink-voice-darwin-amd64
+          path: pink-voice-darwin-amd64
