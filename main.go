@@ -135,8 +135,8 @@ func describeSettings() core.FormSpec {
 				Current: voiceCfg.SoundVolume,
 				Default: 1.0,
 				Min:     0,
-				Max:     1,
-				Step:    0.01,
+				Max:     3,
+				Step:    0.1,
 			},
 			{
 				Name:    "TRANSCRIPTION_PREFIX",
