@@ -2,24 +2,7 @@
 
 package platform
 
-import (
-	"path/filepath"
-	"syscall"
-	"unsafe"
-)
-
-var winmm = syscall.NewLazyDLL("winmm.dll")
-var playSoundW = winmm.NewProc("PlaySoundW")
-
-const (
-	sndFilename = 0x00020000
-	sndAsync    = 0x00000001
-)
-
-func PlaySound(path string, _ float64) {
-	ptr, _ := syscall.UTF16PtrFromString(path)
-	playSoundW.Call(uintptr(unsafe.Pointer(ptr)), 0, sndFilename|sndAsync)
-}
+import "path/filepath"
 
 func SoundOptions() []string {
 	matches, _ := filepath.Glob(`C:\Windows\Media\*.wav`)

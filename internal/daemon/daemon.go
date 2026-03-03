@@ -13,6 +13,7 @@ import (
 	"github.com/pink-tools/pink-core/log"
 	"github.com/pink-tools/pink-voice/internal/config"
 	"github.com/pink-tools/pink-voice/internal/platform"
+	"github.com/pink-tools/pink-voice/internal/player"
 	"github.com/pink-tools/pink-voice/internal/recorder"
 	"github.com/pink-tools/pink-voice/internal/transcriber"
 	"github.com/pink-tools/pink-voice/internal/tray"
@@ -29,6 +30,7 @@ const (
 type Daemon struct {
 	cfg      *config.Config
 	recorder *recorder.Recorder
+	player   *player.Player
 	tray     *tray.Tray
 	state    atomic.Int32
 	wg       sync.WaitGroup
@@ -42,7 +44,14 @@ func New(cfg *config.Config) (*Daemon, error) {
 		return nil, err
 	}
 
-	d := &Daemon{cfg: cfg, recorder: rec}
+	pl, err := player.New()
+	if err != nil {
+		rec.Close()
+		log.Error(context.Background(), "player init failed", log.Attr{K: "error", V: err.Error()})
+		return nil, err
+	}
+
+	d := &Daemon{cfg: cfg, recorder: rec, player: pl}
 	d.state.Store(int32(StateIdle))
 	d.tray = tray.New(cfg.Hotkey, d.toggleRecording, d.Stop)
 
@@ -101,11 +110,11 @@ func (d *Daemon) startRecording() {
 		return
 	}
 	d.setState(StateRecording)
-	platform.PlaySound(d.cfg.SoundStart, d.cfg.SoundVolume)
+	d.player.Play(d.cfg.SoundStart, d.cfg.SoundVolume)
 }
 
 func (d *Daemon) stopRecording() {
-	platform.PlaySound(d.cfg.SoundStop, d.cfg.SoundVolume)
+	d.player.Play(d.cfg.SoundStop, d.cfg.SoundVolume)
 	d.setState(StateTranscribing)
 
 	audioPath, err := d.recorder.Stop()
@@ -157,7 +166,7 @@ func (d *Daemon) processRecording(audioPath string) {
 
 	platform.CopyToClipboard(clipboardText)
 	log.Info(context.Background(), "transcribed", logAttrs...)
-	platform.PlaySound(d.cfg.SoundDone, d.cfg.SoundVolume)
+	d.player.Play(d.cfg.SoundDone, d.cfg.SoundVolume)
 	d.setState(StateIdle)
 }
 
@@ -171,6 +180,7 @@ func (d *Daemon) Stop() {
 	hook.End()
 	d.wg.Wait()
 	d.recorder.Close()
+	d.player.Close()
 	d.tray.Quit()
 }
 
