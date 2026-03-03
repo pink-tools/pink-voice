@@ -32,6 +32,7 @@ type Daemon struct {
 	tray     *tray.Tray
 	state    atomic.Int32
 	wg       sync.WaitGroup
+	hookDone chan struct{}
 }
 
 func New(cfg *config.Config) (*Daemon, error) {
@@ -49,17 +50,40 @@ func New(cfg *config.Config) (*Daemon, error) {
 }
 
 func (d *Daemon) Run() {
-	keys := parseHotkey(d.cfg.Hotkey)
+	d.startHookLoop()
+	d.tray.Run()
+}
+
+func (d *Daemon) startHookLoop() {
 	log.Info(context.Background(), "hotkey registered", log.Attr{K: "hotkey", V: d.cfg.Hotkey})
+	keys := parseHotkey(d.cfg.Hotkey)
 
 	hook.Register(hook.KeyDown, keys, func(e hook.Event) {
 		d.toggleRecording()
 	})
 
+	d.hookDone = make(chan struct{})
 	s := hook.Start()
-	go hook.Process(s)
+	go func() {
+		hook.Process(s)
+		close(d.hookDone)
+	}()
+}
 
-	d.tray.Run()
+// Reload re-reads config and applies changes. Restarts hook if hotkey changed.
+func (d *Daemon) Reload(loadConfig func() *config.Config) {
+	newCfg := loadConfig()
+	oldHotkey := d.cfg.Hotkey
+	d.cfg = newCfg
+
+	if oldHotkey != newCfg.Hotkey {
+		hook.End()
+		<-d.hookDone
+		d.startHookLoop()
+		d.tray.SetHotkey(newCfg.Hotkey)
+	}
+
+	log.Info(context.Background(), "config reloaded")
 }
 
 func (d *Daemon) toggleRecording() {

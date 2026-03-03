@@ -72,6 +72,13 @@ func (t *Tray) SetState(state StateType) {
 	}
 }
 
+func (t *Tray) SetHotkey(hotkey string) {
+	t.hotkey = hotkey
+	if t.toggleItem != nil {
+		t.toggleItem.SetTooltip(hotkey)
+	}
+}
+
 func (t *Tray) Quit() {
 	systray.Quit()
 }

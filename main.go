@@ -63,10 +63,22 @@ Usage:
 	}
 	core.HandleActions(&cfg, actions, handlers)
 
+	var d *daemon.Daemon
+
+	cfg.IPCHandler = func(cmd string) string {
+		if cmd == "RELOAD" && d != nil {
+			core.LoadEnv(serviceName)
+			d.Reload(config.Load)
+			return "OK"
+		}
+		return "UNKNOWN"
+	}
+
 	core.Run(cfg, func(ctx context.Context) error {
 		voiceCfg := config.Load()
 
-		d, err := daemon.New(voiceCfg)
+		var err error
+		d, err = daemon.New(voiceCfg)
 		if err != nil {
 			return err
 		}
