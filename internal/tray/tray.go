@@ -1,8 +1,6 @@
 package tray
 
 import (
-	"runtime"
-
 	"github.com/getlantern/systray"
 )
 
@@ -17,6 +15,7 @@ const (
 var stateNames = []string{"Idle", "Recording...", "Transcribing..."}
 
 type Tray struct {
+	hotkey     string
 	statusItem *systray.MenuItem
 	toggleItem *systray.MenuItem
 	quitItem   *systray.MenuItem
@@ -24,8 +23,8 @@ type Tray struct {
 	onQuit     func()
 }
 
-func New(onToggle, onQuit func()) *Tray {
-	return &Tray{onToggle: onToggle, onQuit: onQuit}
+func New(hotkey string, onToggle, onQuit func()) *Tray {
+	return &Tray{hotkey: hotkey, onToggle: onToggle, onQuit: onQuit}
 }
 
 func (t *Tray) Run() {
@@ -39,11 +38,7 @@ func (t *Tray) ready() {
 	t.statusItem = systray.AddMenuItem("Status: Idle", "")
 	t.statusItem.Disable()
 	systray.AddSeparator()
-	hotkey := "Option+Q"
-	if runtime.GOOS == "windows" {
-		hotkey = "Alt+Q"
-	}
-	t.toggleItem = systray.AddMenuItem("Start Recording", hotkey)
+	t.toggleItem = systray.AddMenuItem("Start Recording", t.hotkey)
 	t.quitItem = systray.AddMenuItem("Quit", "")
 
 	go t.handleClicks()

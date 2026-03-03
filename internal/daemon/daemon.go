@@ -3,7 +3,6 @@ package daemon
 import (
 	"context"
 	"os"
-	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -44,19 +43,16 @@ func New(cfg *config.Config) (*Daemon, error) {
 
 	d := &Daemon{cfg: cfg, recorder: rec}
 	d.state.Store(int32(StateIdle))
-	d.tray = tray.New(d.toggleRecording, d.Stop)
+	d.tray = tray.New(cfg.Hotkey, d.toggleRecording, d.Stop)
 
 	return d, nil
 }
 
 func (d *Daemon) Run() {
-	hotkey := "Option+Q"
-	if runtime.GOOS == "windows" {
-		hotkey = "Alt+Q"
-	}
-	log.Info(context.Background(), "hotkey registered", log.Attr{K: "hotkey", V: hotkey})
+	keys := parseHotkey(d.cfg.Hotkey)
+	log.Info(context.Background(), "hotkey registered", log.Attr{K: "hotkey", V: d.cfg.Hotkey})
 
-	hook.Register(hook.KeyDown, []string{"q", "alt"}, func(e hook.Event) {
+	hook.Register(hook.KeyDown, keys, func(e hook.Event) {
 		d.toggleRecording()
 	})
 
@@ -81,11 +77,11 @@ func (d *Daemon) startRecording() {
 		return
 	}
 	d.setState(StateRecording)
-	platform.PlaySound(platform.SoundStart)
+	platform.PlaySound(d.cfg.SoundStart, d.cfg.SoundVolume)
 }
 
 func (d *Daemon) stopRecording() {
-	platform.PlaySound(platform.SoundStop)
+	platform.PlaySound(d.cfg.SoundStop, d.cfg.SoundVolume)
 	d.setState(StateTranscribing)
 
 	audioPath, err := d.recorder.Stop()
@@ -137,7 +133,7 @@ func (d *Daemon) processRecording(audioPath string) {
 
 	platform.CopyToClipboard(clipboardText)
 	log.Info(context.Background(), "transcribed", logAttrs...)
-	platform.PlaySound(platform.SoundDone)
+	platform.PlaySound(d.cfg.SoundDone, d.cfg.SoundVolume)
 	d.setState(StateIdle)
 }
 
@@ -152,4 +148,13 @@ func (d *Daemon) Stop() {
 	d.wg.Wait()
 	d.recorder.Close()
 	d.tray.Quit()
+}
+
+// parseHotkey converts "alt+q" → []string{"q", "alt"} (gohook wants key first, then modifiers)
+func parseHotkey(hotkey string) []string {
+	parts := strings.Split(strings.ToLower(hotkey), "+")
+	for i, j := 0, len(parts)-1; i < j; i, j = i+1, j-1 {
+		parts[i], parts[j] = parts[j], parts[i]
+	}
+	return parts
 }
