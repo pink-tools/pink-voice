@@ -67,7 +67,7 @@ Usage:
 
 	cfg.IPCHandler = func(cmd string) string {
 		if cmd == "RELOAD" && d != nil {
-			core.LoadEnv(serviceName)
+			core.ReloadEnv(serviceName)
 			d.Reload(config.Load)
 			return "OK"
 		}
