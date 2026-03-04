@@ -6,7 +6,7 @@ require (
 	github.com/atotto/clipboard v0.1.4
 	github.com/gen2brain/malgo v0.11.22
 	github.com/getlantern/systray v1.2.2
-	github.com/pink-tools/pink-core v1.11.0
+	github.com/pink-tools/pink-core v1.11.1
 	github.com/robotn/gohook v0.42.3
 )
 
@@ -21,7 +21,7 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
-	github.com/pink-tools/pink-otel v1.8.0 // indirect
+	github.com/pink-tools/pink-otel v1.8.1 // indirect
 	github.com/vcaesar/keycode v0.10.1 // indirect
 	go.opentelemetry.io/otel v1.39.0 // indirect
 	go.opentelemetry.io/otel/trace v1.39.0 // indirect

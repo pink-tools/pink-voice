@@ -1,11 +1,12 @@
 # pink-voice
 
-Voice input daemon with global hotkey. Requires pink-transcriber running.
+Voice input daemon with configurable global hotkey. Requires pink-transcriber running.
 
 ```bash
-/Users/pink-tools/pink-voice/pink-voice        # start daemon
-/Users/pink-tools/pink-voice/pink-voice stop   # stop daemon
-/Users/pink-tools/pink-voice/pink-voice status # check status
+pink-voice            # Start daemon
+pink-voice stop       # Stop daemon
+pink-voice status     # Check status
+pink-voice settings   # Configure hotkey, sounds, prefix
 ```
 
-Option+Q to start/stop recording. Result copied to clipboard.
+Hotkey (default: Alt+Q) starts/stops recording. Result copied to clipboard.
