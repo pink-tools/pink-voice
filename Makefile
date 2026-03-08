@@ -6,3 +6,6 @@ build:
 
 install: build
 	cp pink-voice $(INSTALL_DIR)/pink-voice
+
+setup:
+	git config core.hooksPath .githooks

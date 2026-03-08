@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 	"runtime"
 
@@ -10,6 +11,9 @@ import (
 	"github.com/pink-tools/pink-voice/internal/daemon"
 	"github.com/pink-tools/pink-voice/internal/platform"
 )
+
+//go:embed context.md
+var claudeContext string
 
 var version = "dev"
 
@@ -22,6 +26,7 @@ func main() {
 	cfg := core.Config{
 		Name:    serviceName,
 		Version: version,
+		Context: claudeContext,
 		Usage: `pink-voice - voice transcription daemon
 
 Usage:
