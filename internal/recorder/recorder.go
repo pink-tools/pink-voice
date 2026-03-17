@@ -71,19 +71,25 @@ func (r *Recorder) Start() error {
 
 func (r *Recorder) Stop() (string, error) {
 	r.mu.Lock()
-	defer r.mu.Unlock()
-
 	if !r.recording {
+		r.mu.Unlock()
 		return "", nil
 	}
-
 	r.recording = false
+	device := r.device
+	r.device = nil
+	r.mu.Unlock()
 
-	if r.device != nil {
-		r.device.Stop()
-		r.device.Uninit()
-		r.device = nil
+	// Stop and uninit outside the lock: device.Stop() waits for the active
+	// callback to finish, and the callback needs the same mutex — holding it
+	// here would deadlock.
+	if device != nil {
+		device.Stop()
+		device.Uninit()
 	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
 	if r.buffer.Len() == 0 {
 		return "", nil
@@ -101,13 +107,17 @@ func (r *Recorder) Stop() (string, error) {
 
 func (r *Recorder) Close() {
 	r.mu.Lock()
-	defer r.mu.Unlock()
+	device := r.device
+	r.device = nil
+	r.mu.Unlock()
 
-	if r.device != nil {
-		r.device.Stop()
-		r.device.Uninit()
-		r.device = nil
+	if device != nil {
+		device.Stop()
+		device.Uninit()
 	}
+
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
 	if r.ctx != nil {
 		r.ctx.Uninit()
