@@ -7,9 +7,9 @@ jobs:
   build-macos-intel:
     runs-on: macos-15-intel
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: '1.24'
           cache: false
@@ -24,7 +24,7 @@ jobs:
           gtimeout 5 ./pink-voice-darwin-amd64 2>&1 | tee output.log || true
           grep -q "hotkey registered" output.log
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: pink-voice-darwin-amd64
           path: pink-voice-darwin-amd64
