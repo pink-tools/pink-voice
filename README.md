@@ -1,28 +1,45 @@
 # pink-voice
 
-Voice input daemon with global hotkey. Ctrl+Q to record, Ctrl+Q to stop. Result copied to clipboard.
+Voice input daemon with configurable global hotkey. Push-to-talk: hold hotkey to record, release to transcribe. Result copied to clipboard.
 
 ## Install
 
-Download binary from [Releases](https://github.com/pink-tools/pink-voice/releases).
-
-## Usage
+Download binary from [Releases](https://github.com/pink-tools/pink-voice/releases), or via pink-orchestrator:
 
 ```bash
-pink-voice        # start daemon
-pink-voice stop   # stop daemon
-pink-voice status # check status
-pink-voice help   # show help
+pink-orchestrator --service-download pink-voice
 ```
 
 ## Requirements
 
-- [pink-transcriber](https://github.com/pink-tools/pink-transcriber) running
+- [pink-transcriber](https://github.com/pink-tools/pink-transcriber)
+
+## Usage
+
+```bash
+pink-voice            # Start daemon (system tray)
+pink-voice stop       # Stop daemon
+pink-voice status     # Check status
+pink-voice settings   # Configure hotkey, sounds, prefix
+```
 
 ## Configuration
 
-Optional `.env` file:
+Optional `.env` file in `~/pink-tools/pink-voice/`:
 
-```
-TRANSCRIPTION_PREFIX="[VOICE INPUT] "
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HOTKEY` | `alt+q` | Global hotkey (e.g. `ctrl+shift+r`) |
+| `SOUND_VOLUME` | `1.0` | Sound volume (0-3) |
+| `SOUND_START` | system | Sound on recording start |
+| `SOUND_STOP` | system | Sound on recording stop |
+| `SOUND_DONE` | system | Sound on transcription complete |
+| `TRANSCRIPTION_PREFIX` | | Text prepended to output |
+
+## Build from Source
+
+```bash
+git clone https://github.com/pink-tools/pink-voice.git
+cd pink-voice
+go build .
 ```
